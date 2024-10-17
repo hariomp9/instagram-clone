@@ -7,8 +7,8 @@ import userReducer from "./authSlice";
 import chatReducer from "./chatSlice";
 import socketSlice from "./socketSlice";
 import rtnSlice from "./rtnSlice";
+import notificationReducer from "./Notification/Notification"; 
 
-// Persist configuration
 const persistConfig = {
   key: "root",
   storage,
@@ -19,7 +19,8 @@ const persistConfig = {
     "Chat",
     "Socketio",
     "realTimeNotification",
-  ], // Add the slices you want to persist here
+    "notifications", 
+  ],
 };
 
 const rootReducer = combineReducers({
@@ -29,18 +30,18 @@ const rootReducer = combineReducers({
   Chat: chatReducer,
   socketio: socketSlice,
   realTimeNotification: rtnSlice,
-
-  // Add more reducers here if needed
+  notifications: notificationReducer, // Add the notification reducer here
 });
 
+// Create the persisted reducer
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
+// Configure the store
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer: persistedReducer, 
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        // Ignore these action types from redux-persist
         ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
       },
     }),

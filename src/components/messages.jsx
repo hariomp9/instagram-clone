@@ -66,13 +66,13 @@ const Messages = ({ selectedUser }) => {
           </div>
         </div>
         <div className="flex flex-col gap-3">
-          {messages &&
+          {Array.isArray(messages) &&
             messages.map((msg, index) => {
               return (
                 <div
                   key={msg._id}
                   className={`flex ${
-                    msg.senderId === user_Details?._id
+                    msg.senderId === user_Details?._id  
                       ? "justify-end"
                       : "justify-start"
                   }`}
