@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { Base_url } from "@/utils/config";
 import toast from "react-hot-toast";
+import useGetAllMessage from "@/hooks/useGetAllMessage";
 
 const DeleteModal = ({ id, closeD, refreshData }) => {
   const { token } = useSelector((state) => state.Auth);
@@ -24,21 +25,23 @@ const DeleteModal = ({ id, closeD, refreshData }) => {
       .request(options)
       .then((res) => {
         if (res.status === 200) {
-          toast.success("Data remove successfully!");
-          refreshData();
-          setLoading(false);
-          closeD();
-          
+          toast.success("Data removed successfully!");
+          refreshData(); // Ensure this triggers re-fetching the data
+          closeD(); // Assuming this closes the modal/dialog
         } else {
-          console.log(error);
-          toast.error("Data remove Failed!");
+          toast.error("Data removal failed!");
         }
       })
       .catch((error) => {
-        toast.error("Data remove Failed!");
+        toast.error("Data removal failed!");
         console.error("Error occurred while deleting:", error);
+      })
+      .finally(() => {
+        setLoading(false); // Ensure the loading state is reset in both success and failure
+        refreshData(); // Refresh data regardless of success or failure
       });
   };
+
   return (
     <>
       <div className="mt-2">

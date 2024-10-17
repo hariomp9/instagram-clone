@@ -13,6 +13,9 @@ import PaperClip from "@/svg/paper-clip";
 import { BsEmojiSmile } from "react-icons/bs";
 import EmojiPicker from "emoji-picker-react";
 import { FaRegGrinSquint } from "react-icons/fa"; // GIF icon
+import GIF from "@/svg/gif";
+
+
 
 const ChatPage = () => {
   const [message, setTextMessage] = useState("");
@@ -58,16 +61,16 @@ const ChatPage = () => {
   const sendMessageHandler = async (receiverId) => {
     try {
       const formData = new FormData();
-  
+
       // Append message if text is present
       if (message) {
         formData.append("message", message);
       }
-  
+
       if (selectedGifUrl) {
         formData.append("videos", selectedGifUrl); // Add GIF to videos array
       }
-  
+
       // Append selected file if any
       if (selectedFile) {
         formData.append(
@@ -75,7 +78,7 @@ const ChatPage = () => {
           selectedFile
         );
       }
-  
+
       const response = await axios.post(
         `${Base_url}/api/v1/message/send/${receiverId}`,
         formData,
@@ -86,7 +89,7 @@ const ChatPage = () => {
           },
         }
       );
-  
+
       if (response.data.success) {
         dispatch(setMessages([...(messages || []), response.data.newMessage]));
         setTextMessage(""); // Reset text message
@@ -97,7 +100,6 @@ const ChatPage = () => {
       console.log(error, "Error");
     }
   };
-  
 
   useEffect(() => {
     return () => {
@@ -179,16 +181,24 @@ const ChatPage = () => {
               <Messages selectedUser={selectedUser} />
 
               <div className="p-4 flex items-center gap-4 relative">
-                <PaperClip
-                  handlePaperclipClick={handlePaperclipClick}
-                  className="cursor-pointer"
-                />
-                <button
-                  className="ml-8"
-                  onClick={() => setShowPicker((prev) => !prev)}
-                >
-                  <BsEmojiSmile size={24} />
-                </button>
+                <div className="flex gap-x-2 justify-around">
+                  <PaperClip
+                    handlePaperclipClick={handlePaperclipClick}
+                    className="cursor-pointer"
+                  />
+                  <button
+                    className=""
+                    onClick={() => setShowPicker((prev) => !prev)}
+                  >
+                    <BsEmojiSmile size={24} />
+                  </button>
+                  <button
+                    className=""
+                    onClick={() => setShowGifPicker((prev) => !prev)}
+                  >
+                    <GIF size={28} />
+                  </button>
+                </div>
 
                 {/* Emoji Picker Dropdown */}
                 {showPicker && (
@@ -197,14 +207,6 @@ const ChatPage = () => {
                   </div>
                 )}
 
-                <button
-                  className="mx-4"
-                  onClick={() => setShowGifPicker((prev) => !prev)}
-                >
-                  <FaRegGrinSquint size={24} />
-                </button>
-
-                
                 {showGifPicker && (
                   <div className="absolute bottom-14 left-10 bg-white p-2 shadow-lg rounded-lg max-h-60 overflow-y-auto">
                     <input
@@ -232,7 +234,7 @@ const ChatPage = () => {
 
                 <input
                   type="text"
-                  className="flex-1 pl-9 p-2 border border-gray-600 rounded-lg outline-none"
+                  className="flex-1  p-2 border border-gray-600 rounded-lg outline-none"
                   placeholder="Type a message"
                   value={message}
                   onChange={(e) => setTextMessage(e.target.value)}
@@ -248,7 +250,6 @@ const ChatPage = () => {
                   Send
                 </Button>
 
-              
                 <input
                   ref={fileInputRef}
                   type="file"
