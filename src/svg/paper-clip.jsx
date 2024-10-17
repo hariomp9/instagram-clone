@@ -9,7 +9,7 @@ const PaperClip = ({ handlePaperclipClick }) => {
       stroke-width="1.5"
       stroke="currentColor"
       //   class="size-6"
-      className="absolute size-6 left-5"
+      className=" size-6 "
       onClick={handlePaperclipClick}
     >
       <path
