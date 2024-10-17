@@ -15,8 +15,6 @@ import EmojiPicker from "emoji-picker-react";
 import { FaRegGrinSquint } from "react-icons/fa"; // GIF icon
 import GIF from "@/svg/gif";
 
-
-
 const ChatPage = () => {
   const [message, setTextMessage] = useState("");
   const { token, user_Details, suggestedUsers } = useSelector(
@@ -48,35 +46,43 @@ const ChatPage = () => {
         `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${query}&limit=10`
       );
       setGifs(response.data.data);
+      console.log(
+        response.data.data,
+        "ddsfd===================================================="
+      );
     } catch (error) {
       console.error("Error fetching GIFs:", error);
     }
   };
 
-  const selectGif = (gifUrl) => {
-    setSelectedGifUrl(gifUrl); // Set selected GIF URL
-    setShowGifPicker(false); // Close GIF picker after selecting
+  const selectGif = (gif) => {
+    const gifUrl = gif.images.original.url; // Extract the correct URL
+    setSelectedGifUrl(gifUrl); // Store it in state
+    setShowGifPicker(false); // Close the picker
   };
 
   const sendMessageHandler = async (receiverId) => {
     try {
       const formData = new FormData();
 
-      // Append message if text is present
-      if (message) {
-        formData.append("message", message);
-      }
+      if (message) formData.append("message", message);
 
+      // Ensure the GIF URL is correctly appended
       if (selectedGifUrl) {
-        formData.append("videos", selectedGifUrl); // Add GIF to videos array
+        console.log(selectedGifUrl, "Selected GIF URL"); // Debug log
+        formData.append("GIF_URL", selectedGifUrl); // Add to FormData
       }
 
-      // Append selected file if any
       if (selectedFile) {
         formData.append(
           selectedFile.type.startsWith("image/") ? "image" : "video",
           selectedFile
         );
+      }
+
+      // Log the FormData to confirm it's correct
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
       }
 
       const response = await axios.post(
@@ -92,12 +98,12 @@ const ChatPage = () => {
 
       if (response.data.success) {
         dispatch(setMessages([...(messages || []), response.data.newMessage]));
-        setTextMessage(""); // Reset text message
-        setSelectedFile(null); // Reset file after sending
-        setSelectedGifUrl(""); // Reset GIF after sending
+        setTextMessage("");
+        setSelectedFile(null);
+        setSelectedGifUrl("");
       }
     } catch (error) {
-      console.log(error, "Error");
+      console.error("Error sending message:", error);
     }
   };
 
@@ -119,6 +125,7 @@ const ChatPage = () => {
     setShowPicker(false); // Close emoji picker
     inputRef.current.focus(); // Refocus the input field
   };
+
   return (
     <>
       <div className="">
@@ -219,13 +226,10 @@ const ChatPage = () => {
                       {gifs.map((gif) => (
                         <img
                           key={gif.id}
-                          src={gif.images.fixed_height.url}
+                          src={gif.images.preview_gif.url} // Use preview URL for faster loading
                           alt="GIF"
+                          onClick={() => selectGif(gif)} // Select the GIF when clicked
                           className="cursor-pointer"
-                          onClick={() => {
-                            selectGif(gif.images.fixed_height.url); // Use the selectGif function
-                            sendMessageHandler(selectedUser?._id); // Call sendMessageHandler after selecting GIF
-                          }}
                         />
                       ))}
                     </div>

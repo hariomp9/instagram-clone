@@ -25,7 +25,7 @@ const Messages = ({ selectedUser }) => {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, isRefresh]);
- 
+
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenD, setIsOpenD] = useState(false);
   const [id, setID] = useState("");
@@ -72,13 +72,13 @@ const Messages = ({ selectedUser }) => {
                 <div
                   key={msg._id}
                   className={`flex ${
-                    msg.senderId === user_Details?._id  
+                    msg.senderId === user_Details?._id
                       ? "justify-end"
                       : "justify-start"
                   }`}
                 >
-                  <div className="relative ">
-                    {msg.senderId === user_Details?._id ? (
+                  <div className="relative">
+                    {msg.senderId === user_Details?._id && (
                       <MoreHorizontal
                         onClick={() => {
                           openD(msg._id);
@@ -86,8 +86,6 @@ const Messages = ({ selectedUser }) => {
                         }}
                         className="cursor-pointer absolute top-[-20px] right-0"
                       />
-                    ) : (
-                      ""
                     )}
 
                     <div
@@ -102,7 +100,9 @@ const Messages = ({ selectedUser }) => {
                     </div>
 
                     <button onClick={open}>
-                      {(msg.image?.length > 0 || msg.videos?.length > 0) && (
+                      {(msg.image?.length > 0 ||
+                        msg.videos?.length > 0 ||
+                        msg.GIF_URL?.length > 0) && (
                         <>
                           {msg.image?.length > 0 && (
                             <img
@@ -119,6 +119,14 @@ const Messages = ({ selectedUser }) => {
                               className="w-60 my-2"
                             />
                           )}
+
+                          {msg.GIF_URL?.length > 0 && (
+                            <img
+                              src={msg.GIF_URL}
+                              alt="GIF"
+                              className="w-40 my-2"
+                            />
+                          )}
                         </>
                       )}
                     </button>
@@ -126,6 +134,7 @@ const Messages = ({ selectedUser }) => {
                 </div>
               );
             })}
+
           {/* <p>{messages?.message}</p> */}
         </div>
         <div ref={messagesEndRef}></div>
