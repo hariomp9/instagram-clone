@@ -49,7 +49,7 @@ const Post = ({ post }) => {
         {},
         {
           headers: {
-            Authorization: token, // ensure token is properly set
+            Authorization: token, 
           },
         }
       );
