@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedUser } from "@/redux/authSlice";
 import { Input } from "./ui/input";
@@ -9,6 +9,7 @@ import axios from "axios";
 import { setMessages } from "@/redux/chatSlice";
 import { Base_url } from "@/utils/config";
 import LeftSidebar from "./leftSidebar";
+import PaperClip from "@/svg/paper-clip";
 
 const ChatPage = () => {
   const [message, setTextMessage] = useState("");
@@ -18,29 +19,50 @@ const ChatPage = () => {
   const { selectedUser } = useSelector((state) => state.userAuth);
   const { onlineUsers, messages } = useSelector((state) => state.Chat);
   const dispatch = useDispatch();
-  // console.log(suggestedUsers, "suggestedUsers");
+  const [selectedFile, setSelectedFile] = useState(null); // State for file (image or video)
+  const fileInputRef = useRef(null);
+
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const handlePaperclipClick = () => {
+    fileInputRef.current.click();
+  };
 
   const sendMessageHandler = async (receiverId) => {
     try {
+      const formData = new FormData();
+      if (message) {
+        formData.append("message", message);
+      }
+      if (selectedFile) {
+        formData.append(
+          selectedFile.type.startsWith("image/") ? "image" : "video",
+          selectedFile
+        );
+      }
+
       const response = await axios.post(
         `${Base_url}/api/v1/message/send/${receiverId}`,
-        { message },
+        formData,
         {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
             Authorization: token,
           },
         }
       );
+
       if (response.data.success) {
-        dispatch(setMessages([...(messages || ""), response.data.newMessage]));
+        dispatch(setMessages([...(messages || []), response.data.newMessage]));
         setTextMessage("");
+        setSelectedFile(null); // Reset file after sending
       }
     } catch (error) {
       console.log(error, "Error");
     }
   };
-
   useEffect(() => {
     return () => {
       dispatch(setSelectedUser(null));
@@ -124,10 +146,12 @@ const ChatPage = () => {
                   Send
                 </Button>
               </div> */}
-              <div className="p-4 flex items-center gap-2">
+              {/* <div className="p-4 flex items-center gap-2 relative">
+                {" "}
+                <PaperClip />
                 <input
                   type="text"
-                  className="flex-1 p-2 border rounded-lg"
+                  className="flex-1 pl-9 p-2 border border-gray-600 rounded-lg outline-none"
                   placeholder="Type a message"
                   value={message}
                   onChange={(e) => setTextMessage(e.target.value)}
@@ -140,6 +164,38 @@ const ChatPage = () => {
                 >
                   Send
                 </Button>
+              </div> */}
+              <div className="p-4 flex items-center gap-2 relative">
+                <PaperClip
+                  handlePaperclipClick={handlePaperclipClick}
+                  className="cursor-pointer"
+                />
+                <input
+                  type="text"
+                  className="flex-1 pl-9 p-2 border border-gray-600 rounded-lg outline-none"
+                  placeholder="Type a message"
+                  value={message}
+                  onChange={(e) => setTextMessage(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter")
+                      sendMessageHandler(selectedUser?._id);
+                  }}
+                />
+                <Button
+                  className="h-10"
+                  onClick={() => sendMessageHandler(selectedUser?._id)}
+                >
+                  Send
+                </Button>
+
+                {/* Hidden file input for images and videos */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,video/*"
+                  style={{ display: "none" }}
+                  onChange={handleFileChange}
+                />
               </div>
             </section>
           ) : (
