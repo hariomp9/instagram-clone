@@ -58,14 +58,16 @@ const ChatPage = () => {
   const sendMessageHandler = async (receiverId) => {
     try {
       const formData = new FormData();
-
-      // Append message or GIF
+  
+      // Append message if text is present
       if (message) {
         formData.append("message", message);
-      } else if (selectedGifUrl) {
-        formData.append("gif", selectedGifUrl); // Append the selected GIF URL
       }
-
+  
+      if (selectedGifUrl) {
+        formData.append("videos", selectedGifUrl); // Add GIF to videos array
+      }
+  
       // Append selected file if any
       if (selectedFile) {
         formData.append(
@@ -73,7 +75,7 @@ const ChatPage = () => {
           selectedFile
         );
       }
-
+  
       const response = await axios.post(
         `${Base_url}/api/v1/message/send/${receiverId}`,
         formData,
@@ -84,10 +86,10 @@ const ChatPage = () => {
           },
         }
       );
-
+  
       if (response.data.success) {
         dispatch(setMessages([...(messages || []), response.data.newMessage]));
-        setTextMessage("");
+        setTextMessage(""); // Reset text message
         setSelectedFile(null); // Reset file after sending
         setSelectedGifUrl(""); // Reset GIF after sending
       }
@@ -95,6 +97,7 @@ const ChatPage = () => {
       console.log(error, "Error");
     }
   };
+  
 
   useEffect(() => {
     return () => {
@@ -201,7 +204,7 @@ const ChatPage = () => {
                   <FaRegGrinSquint size={24} />
                 </button>
 
-                {/* GIF Picker */}
+                
                 {showGifPicker && (
                   <div className="absolute bottom-14 left-10 bg-white p-2 shadow-lg rounded-lg max-h-60 overflow-y-auto">
                     <input
@@ -217,14 +220,16 @@ const ChatPage = () => {
                           src={gif.images.fixed_height.url}
                           alt="GIF"
                           className="cursor-pointer"
-                          onClick={() =>
-                            sendMessage(gif.images.fixed_height.url)
-                          }
+                          onClick={() => {
+                            selectGif(gif.images.fixed_height.url); // Use the selectGif function
+                            sendMessageHandler(selectedUser?._id); // Call sendMessageHandler after selecting GIF
+                          }}
                         />
                       ))}
                     </div>
                   </div>
                 )}
+
                 <input
                   type="text"
                   className="flex-1 pl-9 p-2 border border-gray-600 rounded-lg outline-none"
@@ -243,7 +248,7 @@ const ChatPage = () => {
                   Send
                 </Button>
 
-                {/* Hidden file input for images and videos */}
+              
                 <input
                   ref={fileInputRef}
                   type="file"
