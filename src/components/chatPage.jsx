@@ -10,6 +10,9 @@ import { setMessages } from "@/redux/chatSlice";
 import { Base_url } from "@/utils/config";
 import LeftSidebar from "./leftSidebar";
 import PaperClip from "@/svg/paper-clip";
+import { BsEmojiSmile } from "react-icons/bs";
+import EmojiPicker from "emoji-picker-react";
+import { FaRegGrinSquint } from "react-icons/fa"; // GIF icon
 
 const ChatPage = () => {
   const [message, setTextMessage] = useState("");
@@ -19,8 +22,14 @@ const ChatPage = () => {
   const { selectedUser } = useSelector((state) => state.userAuth);
   const { onlineUsers, messages } = useSelector((state) => state.Chat);
   const dispatch = useDispatch();
-  const [selectedFile, setSelectedFile] = useState(null); // State for file (image or video)
+  const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
+  const [showPicker, setShowPicker] = useState(false);
+  const [showGifPicker, setShowGifPicker] = useState(false);
+  const [gifs, setGifs] = useState([]);
+  const [selectedGifUrl, setSelectedGifUrl] = useState(""); // Add this state for the selected GIF
+
+  const GIPHY_API_KEY = "VA7z8gpiCzjtnbuAqUL0GUQfZEzvkeQ7";
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -30,12 +39,34 @@ const ChatPage = () => {
     fileInputRef.current.click();
   };
 
+  const fetchGifs = async (query) => {
+    try {
+      const response = await axios.get(
+        `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${query}&limit=10`
+      );
+      setGifs(response.data.data);
+    } catch (error) {
+      console.error("Error fetching GIFs:", error);
+    }
+  };
+
+  const selectGif = (gifUrl) => {
+    setSelectedGifUrl(gifUrl); // Set selected GIF URL
+    setShowGifPicker(false); // Close GIF picker after selecting
+  };
+
   const sendMessageHandler = async (receiverId) => {
     try {
       const formData = new FormData();
+
+      // Append message or GIF
       if (message) {
         formData.append("message", message);
+      } else if (selectedGifUrl) {
+        formData.append("gif", selectedGifUrl); // Append the selected GIF URL
       }
+
+      // Append selected file if any
       if (selectedFile) {
         formData.append(
           selectedFile.type.startsWith("image/") ? "image" : "video",
@@ -58,21 +89,30 @@ const ChatPage = () => {
         dispatch(setMessages([...(messages || []), response.data.newMessage]));
         setTextMessage("");
         setSelectedFile(null); // Reset file after sending
+        setSelectedGifUrl(""); // Reset GIF after sending
       }
     } catch (error) {
       console.log(error, "Error");
     }
   };
+
   useEffect(() => {
     return () => {
       dispatch(setSelectedUser(null));
     };
   }, []);
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && message.trim() !== "") {
       e.preventDefault();
       sendMessageHandler(selectedUser?._id);
     }
+  };
+
+  const handleEmojiClick = (emoji) => {
+    setTextMessage((prevMessage) => prevMessage + emoji.emoji); // Add emoji to the message
+    setShowPicker(false); // Close emoji picker
+    inputRef.current.focus(); // Refocus the input field
   };
   return (
     <>
@@ -134,42 +174,57 @@ const ChatPage = () => {
                 </div>
               </div>
               <Messages selectedUser={selectedUser} />
-              {/* <div className="flex items-center p-4 border-t border-t-gray-300">
-                <Input
-                  value={message}
-                  onChange={(e) => setTextMessage(e.target.value)}
-                  type="text"
-                  className="flex-1 mr-2 focus-visible:ring-transparent"
-                  placeholder="Messages..."
-                />
-                <Button onClick={() => sendMessageHandler(selectedUser?._id)}>
-                  Send
-                </Button>
-              </div> */}
-              {/* <div className="p-4 flex items-center gap-2 relative">
-                {" "}
-                <PaperClip />
-                <input
-                  type="text"
-                  className="flex-1 pl-9 p-2 border border-gray-600 rounded-lg outline-none"
-                  placeholder="Type a message"
-                  value={message}
-                  onChange={(e) => setTextMessage(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                />
-                <Button
-                  className="h-10"
-                  // variant="primary"
-                  onClick={() => sendMessageHandler(selectedUser?._id)}
-                >
-                  Send
-                </Button>
-              </div> */}
-              <div className="p-4 flex items-center gap-2 relative">
+
+              <div className="p-4 flex items-center gap-4 relative">
                 <PaperClip
                   handlePaperclipClick={handlePaperclipClick}
                   className="cursor-pointer"
                 />
+                <button
+                  className="ml-8"
+                  onClick={() => setShowPicker((prev) => !prev)}
+                >
+                  <BsEmojiSmile size={24} />
+                </button>
+
+                {/* Emoji Picker Dropdown */}
+                {showPicker && (
+                  <div className="absolute bottom-14 left-2">
+                    <EmojiPicker onEmojiClick={handleEmojiClick} />
+                  </div>
+                )}
+
+                <button
+                  className="mx-4"
+                  onClick={() => setShowGifPicker((prev) => !prev)}
+                >
+                  <FaRegGrinSquint size={24} />
+                </button>
+
+                {/* GIF Picker */}
+                {showGifPicker && (
+                  <div className="absolute bottom-14 left-10 bg-white p-2 shadow-lg rounded-lg max-h-60 overflow-y-auto">
+                    <input
+                      type="text"
+                      placeholder="Search GIFs..."
+                      className="w-full p-2 border rounded-md"
+                      onChange={(e) => fetchGifs(e.target.value)}
+                    />
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      {gifs.map((gif) => (
+                        <img
+                          key={gif.id}
+                          src={gif.images.fixed_height.url}
+                          alt="GIF"
+                          className="cursor-pointer"
+                          onClick={() =>
+                            sendMessage(gif.images.fixed_height.url)
+                          }
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <input
                   type="text"
                   className="flex-1 pl-9 p-2 border border-gray-600 rounded-lg outline-none"

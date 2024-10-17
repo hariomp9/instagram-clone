@@ -19,6 +19,7 @@
 // };
 // export default useGetRTM;
 
+
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage } from "@/redux/chatSlice";
@@ -81,11 +82,10 @@ const useGetRTM = () => {
           }
         );
 
-        // Play the notification sound
+      
         playSound();
       });
 
-      // Cleanup socket listeners when component unmounts
       return () => {
         socket.off("newMessage");
         socket.off("messageNotification");
