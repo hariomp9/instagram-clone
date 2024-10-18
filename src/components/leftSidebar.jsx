@@ -21,8 +21,15 @@ import { useNavigate } from "react-router-dom";
 import CreatePost from "./createPost";
 import Loader from "@/utils/loader";
 import { setPosts } from "@/redux/postSlice";
+
 import { Toaster } from "react-hot-toast";
 import CreateReel from "./CreateReel";
+
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Button } from "./ui/button";
+import toast, { Toaster } from "react-hot-toast";
+import { setUserProfile } from "@/redux/authSlice";
+
 
 const LeftSidebar = () => {
   const { token, user_Details } = useSelector((state) => state.Auth);
@@ -73,6 +80,7 @@ const LeftSidebar = () => {
         dispatch(setSuggestedUsers(""));
         dispatch(setPosts(""));
         dispatch(removeUsersDetails());
+        dispatch(setUserProfile(""))
         navigate("/");
       }
     } catch (error) {

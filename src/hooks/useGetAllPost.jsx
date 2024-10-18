@@ -1,15 +1,12 @@
 import { setPosts } from "@/redux/postSlice";
 import { Base_url } from "@/utils/config";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 const useGetAllPost = () => {
   const dispatch = useDispatch();
-  const [isRefresh, setRefresh] = useState(false);
-  const refreshData = () => {
-    setRefresh(!isRefresh);
-  };
+
   useEffect(() => {
     const fetchAllPost = async () => {
       try {
@@ -22,10 +19,10 @@ const useGetAllPost = () => {
           dispatch(setPosts(response.data.data));
         }
       } catch (error) {
-        console.log(error,"Error");
+        console.log(error, "Error");
       }
     };
     fetchAllPost();
-  }, [isRefresh]);
+  }, []);
 };
 export default useGetAllPost;

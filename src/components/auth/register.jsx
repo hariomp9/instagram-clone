@@ -3,6 +3,7 @@ import axios from "axios";
 import { Base_url } from "@/utils/config";
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "@/utils/loader";
+import toast from "react-hot-toast";
 
 const Registration = () => {
   const [isLoading, setLoading] = useState(false);
@@ -59,11 +60,11 @@ const Registration = () => {
       );
 
       setSuccessMessage("Registration successful!");
-      alert("Registration successful!");
+      toast.success("Registration successful!");
       navigate("/");
     } catch (error) {
       setErrorMessage("Error occurred during registration. Please try again.");
-      alert(error.response.error.message || "Register Failed");
+      toast.error(error.response.error.message || "Register Failed");
     } finally {
       setLoading(false);
     }
