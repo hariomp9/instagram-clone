@@ -24,6 +24,7 @@ import { setPosts } from "@/redux/postSlice";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
 import toast, { Toaster } from "react-hot-toast";
+import { setUserProfile } from "@/redux/authSlice";
 
 const LeftSidebar = () => {
   const { token } = useSelector((state) => state.Auth);
@@ -31,7 +32,6 @@ const LeftSidebar = () => {
   const { likeNotification } = useSelector(
     (state) => state.realTimeNotification
   );
-  console.log(likeNotification, "likeNotification");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -75,6 +75,7 @@ const LeftSidebar = () => {
         dispatch(setSuggestedUsers(""));
         dispatch(setPosts(""));
         dispatch(removeUsersDetails());
+        dispatch(setUserProfile(""))
         navigate("/");
       }
     } catch (error) {

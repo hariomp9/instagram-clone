@@ -50,7 +50,7 @@ const LogIn = () => {
         navigate("/home");
       }
     } catch (err) {
-      // Handle error from API or network issues
+      // Handle error from API or network issues 
       setError(
         err.response?.data?.message || "An error occurred. Please try again."
       );

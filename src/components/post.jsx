@@ -13,6 +13,7 @@ import { IoIosSend } from "react-icons/io";
 import useGetUserProfile from "@/hooks/useGetProfile";
 import { Link } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import { setUserProfile } from "@/redux/authSlice";
 
 const Post = ({ post }) => {
   const dispatch = useDispatch();
@@ -22,6 +23,18 @@ const Post = ({ post }) => {
   const { user_Details } = useSelector((state) => state.Auth);
   const { userProfile } = useSelector((state) => state.userAuth);
 
+  const filteredIds = userProfile?.following?.map(
+    (followingUser) => followingUser?._id
+  );
+  const postId = post?.author?._id;
+  const isFollowing = filteredIds.includes(postId);
+  console.log(filteredIds, "filteredIds");
+  console.log(post?.author?._id, "post?");
+  console.log(postId, "postId");
+
+  // const isFollowing = filteredIds?.some((id) => id === post?.author?._id);
+
+  console.log(userProfile, "userProfilenew");
   const { posts } = useSelector((state) => state.Post);
   const [liked, setLiked] = useState(
     post?.likes?.includes(user_Details?._id) || false // initialize based on user ID
@@ -49,7 +62,7 @@ const Post = ({ post }) => {
         {},
         {
           headers: {
-            Authorization: token, 
+            Authorization: token,
           },
         }
       );
@@ -166,6 +179,24 @@ const Post = ({ post }) => {
       if (response.status === 200) {
         toast.success(response.data.message || "Success");
         refreshData();
+        getAUSer();
+      } else console.log("Failed");
+    } catch (error) {
+      toast.error(error, "Error");
+    }
+  };
+  const getAUSer = async () => {
+    try {
+      const response = await axios.get(
+        `${Base_url}/api/v1/Auth/getProfile/${user_Details?._id}`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      if (response.status === 200) {
+        dispatch(setUserProfile(response.data.data));
       } else console.log("Failed");
     } catch (error) {
       toast.error(error, "Error");
@@ -187,13 +218,13 @@ const Post = ({ post }) => {
         toast.success(res.data.message || "success");
       }
     } catch (error) {
-      console.log(error ,"Error");
+      console.log(error, "Error");
     }
   };
 
   return (
     <>
-     <Toaster />
+      <Toaster />
       <div className="my-8 w-full max-w-[400px] mx-auto">
         <div className="flex items-center justify-between">
           <div className="flex gap-2 items-center">
@@ -211,47 +242,34 @@ const Post = ({ post }) => {
             </Link>
           </div>
           <div className="flex gap-3">
-            {/* {post?.author?._id === userProfile?.following[3]?._id ? (
-              <button
-              onClick={() => handleFollow(post?.author?._id)}
-              className="text-[#4CB5F9] font-[600]"
-            >
-              Followwwww
-            </button>
-            ) : (
-              <button
-                onClick={() => handleFollow(post?.author?._id)}
-                className="text-[#4CB5F9] font-[600]"
-              >
-                Follow
-              </button>
-            )} */}
-            {/* {userProfile._id === post?.author?._id ? (
+            {userProfile._id === post?.author?._id ? (
               ""
             ) : (
-            
-            )} */}
-            <div>
               <div>
-                {user_Details?.following?.some(
+                {userProfile?.following?.some(
                   (followingUser) => followingUser._id === post?.author?._id
                 ) ? (
-                  <button
-                    onClick={() => handleFollow(post?.author?._id)}
-                    className="text-red-700 font-[600]"
-                  >
-                    Unfollow
-                  </button>
+                  ""
                 ) : (
-                  <button
-                    onClick={() => handleFollow(post?.author?._id)}
-                    className="text-[#4CB5F9] font-[600]"
-                  >
-                    Follow
-                  </button>
+                  <div className="flex justify-center">
+                    {userProfile?.following?.filter(
+                      (followingUser) =>
+                        followingUser?._id === post?.author?._id
+                    ) ? (
+                      <button
+                        onClick={() => handleFollow(post?.author?._id)}
+                        className="text-[#4CB5F9] font-[600]"
+                      >
+                        Follow
+                      </button>
+                    ) : (
+                      ""
+                    )}
+                  </div>
                 )}
               </div>
-            </div>
+            )}
+
             <Dialog>
               <DialogTrigger asChild>
                 <MoreHorizontal className="cursor-pointer" />
@@ -260,32 +278,21 @@ const Post = ({ post }) => {
                 {userProfile._id === post?.author?._id ? (
                   ""
                 ) : (
-                  <div>
-                    {userProfile?.following?.some(
-                      (followingUser) => followingUser._id === post?.author?._id
-                    ) ? (
-                      ""
+                  <div className="flex justify-center">
+                    {isFollowing ? (
+                      <button
+                        onClick={() => handleFollow(postId)}
+                        className="text-red-700 font-[600] outline-none"
+                      >
+                        Unfollow
+                      </button>
                     ) : (
-                      <div className="flex justify-center">
-                        {userProfile?.following?.some(
-                          (followingUser) =>
-                            followingUser._id === post?.author?._id
-                        ) ? (
-                          <button
-                            onClick={() => handleFollow(post?.author?._id)}
-                            className="text-red-700 font-[600]"
-                          >
-                            Unfollow
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleFollow(post?.author?._id)}
-                            className="text-[#4CB5F9] font-[600]"
-                          >
-                            Follow
-                          </button>
-                        )}
-                      </div>
+                      <button
+                        onClick={() => handleFollow(postId)}
+                        className="text-[#4CB5F9] font-[600] p-2 outline-none"
+                      >
+                        Follow
+                      </button>
                     )}
                   </div>
                 )}
