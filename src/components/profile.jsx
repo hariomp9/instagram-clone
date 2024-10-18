@@ -16,7 +16,7 @@ const Profile = () => {
   const logedInUser = user_Details?._id === userId;
   const isFollowing = true;
   useGetUserProfile(userId);
-
+  
   const handleTabChange = (tab) => {
     setActiveTab(tab);
   };

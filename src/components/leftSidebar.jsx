@@ -21,25 +21,23 @@ import { useNavigate } from "react-router-dom";
 import CreatePost from "./createPost";
 import Loader from "@/utils/loader";
 import { setPosts } from "@/redux/postSlice";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Button } from "./ui/button";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
+import CreateReel from "./CreateReel";
 
 const LeftSidebar = () => {
-  const { token } = useSelector((state) => state.Auth);
-  const { user_Details } = useSelector((state) => state.Auth);
+  const { token, user_Details } = useSelector((state) => state.Auth);
   const { likeNotification } = useSelector(
     (state) => state.realTimeNotification
   );
-  console.log(likeNotification, "likeNotification");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
+
+  const [open, setOpen] = useState(false); // Post modal
+  const [open1, setOpen1] = useState(false); // Reel modal
   const [isLoading, setLoading] = useState(false);
 
-  const sidebarItem = [
+  const sidebarItems = [
     { icon: <Home />, text: "Home" },
-    // { icon: <MessageCircle />, text: "Chat" },
     { icon: <Search />, text: "Search" },
     { icon: <TrendingUp />, text: "Explore" },
     { icon: <MessageCircle />, text: "Reels" },
@@ -57,6 +55,7 @@ const LeftSidebar = () => {
     },
     { icon: <LogOut />, text: "Logout" },
   ];
+
   const handleLogout = async () => {
     setLoading(true);
     try {
@@ -64,11 +63,10 @@ const LeftSidebar = () => {
         `${Base_url}/api/v1/Auth/logout`,
         {},
         {
-          headers: {
-            authorization: token,
-          },
+          headers: { authorization: token },
         }
       );
+
       if (response.status === 200) {
         toast.success("Logout Successfully");
         dispatch(removeToken(""));
@@ -78,30 +76,40 @@ const LeftSidebar = () => {
         navigate("/");
       }
     } catch (error) {
-      toast.error(error.response.data.message || "Failed");
+      toast.error(error.response?.data?.message || "Logout failed");
     } finally {
       setLoading(false);
     }
   };
-  const createPostHandler = () => {
-    setOpen(true);
-  };
-  const sidebarHandler = (textType) => {
-    if (textType === "Logout") {
-      handleLogout();
-    } else if (textType === "Create") {
-      createPostHandler();
-    } else if (textType === "Profile") {
-      navigate(`/profile/${user_Details?._id}`);
-    } else if (textType === "Home") {
-      navigate("/home");
-    } else if (textType === "Message") {
-      navigate("/chat");
+
+  const sidebarHandler = (text) => {
+    switch (text) {
+      case "Logout":
+        handleLogout();
+        break;
+      case "Create":
+        navigate("/create");
+        break;
+      case "Profile":
+        navigate(`/profile/${user_Details?._id}`);
+        break;
+      case "Home":
+        navigate("/home");
+        break;
+      case "Message":
+        navigate("/chat");
+        break;
+      case "Reels":
+        navigate("/Reels");
+        break;
+      default:
+        break;
     }
   };
+
   return (
     <>
-    <Toaster/>
+      <Toaster />
       {isLoading && <Loader />}
       <div className=" fixed top-0 z-10 left-0  border-r border-gray-300 w-[16%] h-screen">
         <div className="flex flex-col overflow-y-scroll h-screen overflow-hidden px-4 relative scrollbarHidden">
@@ -112,7 +120,7 @@ const LeftSidebar = () => {
             /> */}
           </div>
           <div className="pt-[30px] xl:pt-[50px] 2xl:pt-[80px]">
-            {sidebarItem.map((item, index) => {
+            {sidebarItems.map((item, index) => {
               return (
                 <div
                   onClick={() => sidebarHandler(item?.text)}
@@ -137,8 +145,6 @@ const LeftSidebar = () => {
                           <div>
                             {likeNotification?.message === 0 ? (
                               <p>No new notification</p>
-                      
-
                             ) : (
                               likeNotification?.map((notification) => {
                                 return (
@@ -175,6 +181,7 @@ const LeftSidebar = () => {
           </div>
         </div>
         <CreatePost setOpen={setOpen} open={open} />
+        <CreateReel setOpen1={setOpen1} open1={open1} />
       </div>
     </>
   );

@@ -7,7 +7,8 @@ import userReducer from "./authSlice";
 import chatReducer from "./chatSlice";
 import socketSlice from "./socketSlice";
 import rtnSlice from "./rtnSlice";
-import notificationReducer from "./Notification/Notification"; 
+import notificationReducer from "./Notification/Notification";
+import reelsReducer from "./ReelsSlice"; // Import your ReelsSlice
 
 const persistConfig = {
   key: "root",
@@ -20,6 +21,7 @@ const persistConfig = {
     "Socketio",
     "realTimeNotification",
     "notifications", 
+    "reels", // Add reels to the whitelist
   ],
 };
 
@@ -30,7 +32,8 @@ const rootReducer = combineReducers({
   Chat: chatReducer,
   socketio: socketSlice,
   realTimeNotification: rtnSlice,
-  notifications: notificationReducer, // Add the notification reducer here
+  notifications: notificationReducer,
+  reels: reelsReducer, // Add reels reducer here
 });
 
 // Create the persisted reducer
@@ -38,7 +41,7 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 // Configure the store
 export const store = configureStore({
-  reducer: persistedReducer, 
+  reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
