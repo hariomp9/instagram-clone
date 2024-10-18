@@ -21,11 +21,9 @@ import { useNavigate } from "react-router-dom";
 import CreatePost from "./createPost";
 import Loader from "@/utils/loader";
 import { setPosts } from "@/redux/postSlice";
-
 import CreateReel from "./CreateReel";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
-
 import toast, { Toaster } from "react-hot-toast";
 import { setUserProfile } from "@/redux/authSlice";
 
