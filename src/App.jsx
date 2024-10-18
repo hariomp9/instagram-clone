@@ -12,6 +12,8 @@ import { setSocket } from "./redux/socketSlice";
 import { setOnlineUsers } from "./redux/chatSlice";
 import { Base_url } from "./utils/config";
 import { setLikeNotification } from "./redux/rtnSlice";
+import Reels from "./components/ui/Reels";
+import CreatePostReels from "./components/ui/CreatePostReels";
 
 function App() {
   const { user_Details } = useSelector((state) => state.Auth);
@@ -35,20 +37,18 @@ function App() {
       });
 
       socketio.on("notification", (notification) => {
-        console.log(notification , "notification")
-        dispatch(setLikeNotification  (notification));
-      
+        console.log(notification, "notification");
+        dispatch(setLikeNotification(notification));
       });
       return () => {
         socketio.close();
         dispatch(setSocket(null));
       };
-    } else if(socket) {
+    } else if (socket) {
       socket.close();
       dispatch(setSocket(null));
     }
   }, [user_Details, dispatch]);
-
 
   return (
     <BrowserRouter>
@@ -59,6 +59,8 @@ function App() {
         <Route path="/profile/:id" element={<Profile />} />
         <Route path="/profile/edit" element={<EditProfile />} />
         <Route path="/chat" element={<ChatPage />} />
+        <Route path="/reels" element={<Reels />} />
+        <Route path="/Create" element={<CreatePostReels />} />
       </Routes>
     </BrowserRouter>
   );

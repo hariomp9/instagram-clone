@@ -19,13 +19,12 @@
 // };
 // export default useGetRTM;
 
-
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage } from "@/redux/chatSlice";
 import { addNotification } from "@/redux/Notification/Notification";
 import toast, { Toaster } from "react-hot-toast";
-import notificationSound from '../assets/Jai Shree Ram Notification Tone Ringtone Download - MobCup.Com.Co.mp3';
+import notificationSound from "../assets/Jai Shree Ram Notification Tone Ringtone Download - MobCup.Com.Co.mp3";
 
 const useGetRTM = () => {
   const dispatch = useDispatch();
@@ -82,7 +81,6 @@ const useGetRTM = () => {
           }
         );
 
-      
         playSound();
       });
 
