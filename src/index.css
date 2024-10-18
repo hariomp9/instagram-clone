@@ -141,3 +141,12 @@ h2 {
 .listItem{
   @apply p-[10px] 
 }
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for a cleaner look */
+ }
