@@ -19,8 +19,11 @@ const ReelsSlice = createSlice({
     setSelectedReels: (state, action) => {
       state.selectedReels = action.payload;
     },
+    addReel: (state, action) => {
+      state.Reels.push(action.payload); 
+    },
   },
 });
 
-export const { setReels, setSelectedReels } = ReelsSlice.actions;
+export const { setReels, setSelectedReels,addReel } = ReelsSlice.actions;
 export default ReelsSlice.reducer;
