@@ -11,7 +11,6 @@ const useGetAllPost = () => {
     const fetchAllPost = async () => {
       try {
         const response = await axios.get(`${Base_url}/api/v1/postAuth/get`, {
-          //   withCredentials: true,
         });
         if (response.data.success) {
           // console.log(response.data.data);

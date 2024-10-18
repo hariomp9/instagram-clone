@@ -14,8 +14,10 @@ import useGetUserProfile from "@/hooks/useGetProfile";
 import { Link } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { setUserProfile } from "@/redux/authSlice";
+import useGetLike from "@/hooks/useGetLike";
 
 const Post = ({ post }) => {
+  useGetLike();
   const dispatch = useDispatch();
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
@@ -27,14 +29,7 @@ const Post = ({ post }) => {
     (followingUser) => followingUser?._id
   );
   const postId = post?.author?._id;
-  const isFollowing = filteredIds.includes(postId);
-  console.log(filteredIds, "filteredIds");
-  console.log(post?.author?._id, "post?");
-  console.log(postId, "postId");
-
-  // const isFollowing = filteredIds?.some((id) => id === post?.author?._id);
-
-  console.log(userProfile, "userProfilenew");
+  const isFollowing = filteredIds.includes(postId || "");
   const { posts } = useSelector((state) => state.Post);
   const [liked, setLiked] = useState(
     post?.likes?.includes(user_Details?._id) || false // initialize based on user ID

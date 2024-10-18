@@ -1,27 +1,7 @@
-// import { setMessages } from "@/redux/chatSlice";
-// import { useEffect } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-
-// const useGetRTM = () => {
-//   const dispatch = useDispatch();
-//   const { socket } = useSelector((state) => state.socketio);
-//   const { messages } = useSelector((state) => state.Chat);
-//   useEffect(() => {
-//     // newMessage
-//     socket?.on("newMessage", (newMessage) => {
-//       dispatch(setMessages([...messages, newMessage]));
-//     });
-
-//     return () => {
-//       socket?.off("newMessage");
-//     };
-//   }, [messages, setMessages]);
-// };
-// export default useGetRTM;
 
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addMessage } from "@/redux/chatSlice";
+import {  addMessage } from "@/redux/chatSlice";
 import { addNotification } from "@/redux/Notification/Notification";
 import toast, { Toaster } from "react-hot-toast";
 import notificationSound from "../assets/Jai Shree Ram Notification Tone Ringtone Download - MobCup.Com.Co.mp3";
@@ -44,11 +24,7 @@ const useGetRTM = () => {
       // Listen for new messages from the socket
       socket.on("newMessage", (newMessage) => {
         console.log("New message received:", newMessage);
-
-        // Add the new message to the Redux store
         dispatch(addMessage(newMessage));
-
-        // Play the notification sound
         playSound();
       });
 
@@ -69,7 +45,7 @@ const useGetRTM = () => {
 
         // Show toast notification
         toast(
-          `${notification.senderDetails.Username}: ${notification.notificationMessage}`,
+          `${notification.senderDetails.Username}:${notification.notificationMessage}`,
           {
             icon: (
               <img
@@ -82,11 +58,13 @@ const useGetRTM = () => {
         );
 
         playSound();
+        
       });
 
       return () => {
         socket.off("newMessage");
         socket.off("messageNotification");
+        socket.off("notification");
       };
     }
   }, [socket, dispatch]);

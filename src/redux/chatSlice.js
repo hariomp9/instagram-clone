@@ -16,6 +16,7 @@ const chatSlice = createSlice({
     addMessage: (state, action) => {
       state.messages.push(action.payload); // Add individual message
     },
+  
   },
 });
 export const { setOnlineUsers, setMessages,addMessage } = chatSlice.actions;
