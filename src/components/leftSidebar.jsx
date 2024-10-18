@@ -27,7 +27,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
 
 import toast, { Toaster } from "react-hot-toast";
-import CreateReel from "./CreateReel";
 import { setUserProfile } from "@/redux/authSlice";
 
 
