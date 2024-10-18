@@ -46,10 +46,7 @@ const ChatPage = () => {
         `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${query}&limit=10`
       );
       setGifs(response.data.data);
-      console.log(
-        response.data.data,
-        "ddsfd===================================================="
-      );
+
     } catch (error) {
       console.error("Error fetching GIFs:", error);
     }
@@ -206,7 +203,7 @@ const ChatPage = () => {
                     <GIF size={28} />
                   </button>
                 </div>
-
+              
                 {/* Emoji Picker Dropdown */}
                 {showPicker && (
                   <div className="absolute bottom-14 left-2">

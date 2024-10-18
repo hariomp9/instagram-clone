@@ -9,11 +9,12 @@ import io from "socket.io-client";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSocket } from "./redux/socketSlice";
-import { setOnlineUsers } from "./redux/chatSlice";
+import {  setOnlineUsers } from "./redux/chatSlice";
 import { Base_url } from "./utils/config";
-import { setLikeNotification } from "./redux/rtnSlice";
 import Reels from "./components/ui/Reels";
 import CreatePostReels from "./components/ui/CreatePostReels";
+import toast from "react-hot-toast";
+import { addNotification } from "./redux/Notification/Notification";
 
 function App() {
   const { user_Details } = useSelector((state) => state.Auth);
@@ -36,10 +37,6 @@ function App() {
         dispatch(setOnlineUsers(onlineUsers));
       });
 
-      socketio.on("notification", (notification) => {
-        console.log(notification, "notification");
-        dispatch(setLikeNotification(notification));
-      });
       return () => {
         socketio.close();
         dispatch(setSocket(null));

@@ -6,9 +6,9 @@ import postReducer from "./postSlice";
 import userReducer from "./authSlice";
 import chatReducer from "./chatSlice";
 import socketSlice from "./socketSlice";
-import rtnSlice from "./rtnSlice";
 import notificationReducer from "./Notification/Notification";
 import reelsReducer from "./ReelsSlice"; // Import your ReelsSlice
+import likeSlice from "./Notification/likeSlice";
 
 const persistConfig = {
   key: "root",
@@ -20,8 +20,9 @@ const persistConfig = {
     "Chat",
     "Socketio",
     "realTimeNotification",
-    "notifications", 
+    "notifications",
     "reels", // Add reels to the whitelist
+    "LikeNotify",
   ],
 };
 
@@ -31,9 +32,9 @@ const rootReducer = combineReducers({
   userAuth: userReducer,
   Chat: chatReducer,
   socketio: socketSlice,
-  realTimeNotification: rtnSlice,
   notifications: notificationReducer,
-  reels: reelsReducer, // Add reels reducer here
+  reels: reelsReducer, // Add reels reducer here\
+  LikeNotify: likeSlice,
 });
 
 // Create the persisted reducer

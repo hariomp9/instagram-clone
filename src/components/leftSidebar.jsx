@@ -21,17 +21,20 @@ import { useNavigate } from "react-router-dom";
 import CreatePost from "./createPost";
 import Loader from "@/utils/loader";
 import { setPosts } from "@/redux/postSlice";
+
 import CreateReel from "./CreateReel";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
+
 import toast, { Toaster } from "react-hot-toast";
+import CreateReel from "./CreateReel";
 import { setUserProfile } from "@/redux/authSlice";
 
 
 const LeftSidebar = () => {
   const { token, user_Details } = useSelector((state) => state.Auth);
   const { likeNotification } = useSelector(
-    (state) => state.realTimeNotification
+    (state) => state.LikeNotify
   );
   const dispatch = useDispatch();
   const navigate = useNavigate();
